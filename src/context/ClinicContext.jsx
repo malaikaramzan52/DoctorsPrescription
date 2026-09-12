@@ -11,16 +11,22 @@ import {
 const ClinicContext = createContext();
 
 export const ClinicProvider = ({ children }) => {
-  // Authentication State (Resets to false on page refresh so user lands on Login page)
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Authentication State (Persisted in localStorage)
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const saved = localStorage.getItem("medteal_is_logged_in");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
 
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("medteal_user");
     return savedUser ? JSON.parse(savedUser) : { email: defaultDoctor.email, name: defaultDoctor.name };
   });
 
-  // Active Tab State
-  const [activeTab, setActiveTab] = useState("dashboard");
+  // Active Tab State (Persisted in localStorage)
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTab = localStorage.getItem("medteal_active_tab");
+    return savedTab || "dashboard";
+  });
 
   // Consultation pre-selected patient state
   const [consultationPatient, setConsultationPatient] = useState(null);
@@ -67,6 +73,14 @@ export const ClinicProvider = ({ children }) => {
   };
 
   // Sync with LocalStorage
+
+  useEffect(() => {
+    localStorage.setItem("medteal_is_logged_in", JSON.stringify(isLoggedIn));
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    localStorage.setItem("medteal_active_tab", activeTab);
+  }, [activeTab]);
 
   useEffect(() => {
     localStorage.setItem("medteal_user", JSON.stringify(user));
