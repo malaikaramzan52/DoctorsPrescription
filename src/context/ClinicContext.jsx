@@ -14,7 +14,7 @@ export const ClinicProvider = ({ children }) => {
   // Authentication State (Persisted in localStorage)
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const saved = localStorage.getItem("medteal_is_logged_in");
-    return saved !== null ? JSON.parse(saved) : true;
+    return saved !== null ? JSON.parse(saved) : false;
   });
 
   const [user, setUser] = useState(() => {
