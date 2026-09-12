@@ -11,13 +11,15 @@ import {
 const ClinicContext = createContext();
 
 export const ClinicProvider = ({ children }) => {
-  // Authentication State (Defaults to false so Login page is shown on start)
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Authentication State (Persisted in localStorage)
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const saved = localStorage.getItem("medteal_is_logged_in");
+    return saved ? JSON.parse(saved) : false;
+  });
 
-  // Clean up any legacy auto-login flags stored in browser localStorage
   useEffect(() => {
-    localStorage.removeItem("medteal_is_logged_in");
-  }, []);
+    localStorage.setItem("medteal_is_logged_in", JSON.stringify(isLoggedIn));
+  }, [isLoggedIn]);
 
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("medteal_user");
@@ -122,6 +124,7 @@ export const ClinicProvider = ({ children }) => {
 
   const logout = () => {
     setIsLoggedIn(false);
+    localStorage.removeItem("medteal_is_logged_in");
     showToast("Logged out successfully.", "info");
   };
 
